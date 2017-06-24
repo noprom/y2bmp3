@@ -25,6 +25,9 @@ func init() {
 				&controllers.UserController{},
 			),
 		),
+		beego.NSNamespace("/video", 
+			beego.NSRouter("/convert", &controllers.VideoController{}, "post:Convert"),
+		)
 	)
 	beego.AddNamespace(ns)
 }
