@@ -1,13 +1,13 @@
 package controllers
 
 import (
-	"crypto/md5"
-	"fmt"
-	"io"
-	"net/http"
-	"os"
-	"path/filepath"
-	"time"
+	// "crypto/md5"
+	// "fmt"
+	// "io"
+	// "net/http"
+	// "os"
+	// "path/filepath"
+	// "time"
 
 	"y2bmp3/models"
 
@@ -24,8 +24,11 @@ type VideoController struct {
 // @Success 200 {int} models.Video.Id
 // @Failure 403 body is empty
 func (c *VideoController) Convert() {
-	id := c.GetString("id")
-	c.Data["json"] = models.NewNormalInfo(id)
+	v := c.GetString("v")
+	c.Data["json"] = models.NewNormalInfo(v)
+	c.ServeJSON()
+	beego.Debug("video id", v)
+	return
 }
 
 // Register method.
