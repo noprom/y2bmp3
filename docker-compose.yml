@@ -1,0 +1,36 @@
+nginx:
+  image: daocloud.io/noprom/noprom-nginx:master-3b623e9
+  ports:
+    - "80:80"
+  hostname: nginx
+  links:
+    - "go"
+  volumes:
+    - ~/app:/app
+    - ~/Documents/Dev/Go/src/conf/nginx:/etc/nginx/conf.d
+    - ~/app/log/nginx:/var/log/nginx
+go:
+  image: beego:v1
+  ports: 
+    - "8082:8080"
+  hostname: go
+  links:
+    - "redis"
+    - "mongo"
+  volumes:
+    - ~/Documents/Dev/Go/src:/go/src
+  working_dir: /go/src/y2bmp3
+  command: "bee run"
+redis:
+  image: daocloud.io/noprom/noprom-redis:latest
+  ports:
+    - "6380:6379"
+  hostname: redis
+mongo:
+  image: daocloud.io/mongo:latest
+  ports:
+      - "27018:27017"
+  hostname: mongo
+  volumes:
+    - ~/app:/app
+    - ~/app/data/mongo:/data/db
