@@ -24,11 +24,33 @@ type VideoController struct {
 // @Success 200 {int} models.Video.Id
 // @Failure 403 body is empty
 func (c *VideoController) Convert() {
-	v := c.GetString("v")
-	c.Data["json"] = models.NewNormalInfo(v)
+	id := c.GetString("v")
+	c.Data["json"] = models.NewNormalInfo(id)
+	beego.Debug("video id", id)
+
+	video := models.Video{
+		Id:    id,
+		Title: "Hurry up",
+		Path:  "/app/data/uploads/201707/02/",
+		// CreateTime: nil,
+	}
+	beego.Debug("video info: ", &video)
+	c.Data["json"] = video
 	c.ServeJSON()
-	beego.Debug("video id", v)
 	return
+	if code, err := video.FindById(id); err != nil {
+		beego.Debug("Find Video By Id: ", err)
+		if code == models.ErrNotFound {
+			c.Data["json"] = models.NewErrorInfo(ErrNoVideo)
+		} else {
+			c.Data["json"] = models.NewErrorInfo(ErrDatabase)
+		}
+		c.ServeJSON()
+		return
+	}
+
+	beego.Debug("Video Info: ", &video)
+	c.ServeJSON()
 }
 
 // Register method.
