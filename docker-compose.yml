@@ -24,12 +24,12 @@ go:
 redis:
   image: daocloud.io/noprom/noprom-redis:latest
   ports:
-    - "6380:6379"
+    - "6381:6379"
   hostname: redis
 mongo:
   image: daocloud.io/mongo:latest
   ports:
-      - "27018:27017"
+      - "27019:27017"
   hostname: mongo
   volumes:
     - ~/app:/app
