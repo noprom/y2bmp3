@@ -7,29 +7,8 @@ import (
 	"time"
 )
 
-func run() {
-	cmd := exec.Command("/bin/sh", "-c", "ping www.baidu.com")
-	_, err := cmd.Output()
-	if err != nil {
-		panic(err.Error())
-	}
-
-	if err := cmd.Start(); err != nil {
-		panic(err.Error())
-	}
-
-	if err := cmd.Wait(); err != nil {
-		panic(err.Error())
-	}
-
-	fmt.Println("hello run")
-}
-
 func main() {
-	go run()
-	time.Sleep(1e9)
-
-	cmd := exec.Command("/bin/sh", "-c", `youtube-dl -c --no-warnings -x --audio-format mp3 -k https://www.youtube.com/watch?v=ud5m4oaBrUY`)
+	cmd := exec.Command("/bin/sh", "-c", `youtube-dl -c --no-warnings -x --audio-format mp3 https://www.youtube.com/watch?v=ud5m4oaBrUY | grep .mp3`)
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		fmt.Println("StdoutPipe: " + err.Error())
@@ -58,6 +37,7 @@ func main() {
 		return
 	}
 
+	// Handle Stdout
 	bytes, err := ioutil.ReadAll(stdout)
 	if err != nil {
 		fmt.Println("ReadAll stdout: ", err.Error())
