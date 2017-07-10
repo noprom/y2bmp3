@@ -2,6 +2,7 @@ package models
 
 import (
 	"gopkg.in/mgo.v2"
+	"os/exec"
 	// "gopkg.in/mgo.v2/bson"
 	// "time"
 
@@ -56,4 +57,9 @@ func (v *Video) FindById(id string) (code int, err error) {
 	}
 
 	return
+}
+
+// Download from Youtube, and convert it to MP3.
+func (v *Video) Download(id string) (title string, path string, err error) {
+
 }

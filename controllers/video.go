@@ -28,6 +28,8 @@ func (c *VideoController) Convert() {
 	c.Data["json"] = models.NewNormalInfo(id)
 	beego.Debug("video id", id)
 
+	// Download Video
+
 	video := models.Video{
 		Id:    id,
 		Title: "Hurry up",
