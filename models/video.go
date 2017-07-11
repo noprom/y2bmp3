@@ -2,10 +2,14 @@ package models
 
 import (
 	"gopkg.in/mgo.v2"
-	"os/exec"
 	// "gopkg.in/mgo.v2/bson"
-	// "time"
-
+	"fmt"
+	// "github.com/astaxie/beego"
+	"io/ioutil"
+	"os"
+	"os/exec"
+	"strings"
+	"time"
 	"y2bmp3/models/mymongo"
 )
 
@@ -59,7 +63,51 @@ func (v *Video) FindById(id string) (code int, err error) {
 	return
 }
 
-// Download from Youtube, and convert it to MP3.
-func (v *Video) Download(id string) (title string, path string, err error) {
+func PathExists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
+}
 
+// Download from Youtube, and convert it to MP3.
+func Download(id string) (title string, path string, err error) {
+	path := fmt.Sprintf("/app/data/videos/%s", time.Now().Format("200601/02"))
+	pathExists, _ := PathExists(path)
+	if !pathExists {
+		// fmt.Printf("%s not exist.\n", path)
+		mkdirErr := os.MkdirAll(path, 0777)
+		if mkdirErr != nil {
+			fmt.Println("mkdir Err :" + mkdirErr.Error())
+		}
+	}
+
+	cmdStr := fmt.Sprintf("cd %s && youtube-dl -c --no-warnings -x --audio-format mp3 https://www.youtube.com/watch?v=%s | grep .mp3", path, id)
+	cmd := exec.Command("/bin/sh", "-c", cmdStr)
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		fmt.Println("StdoutPipe: " + err.Error())
+		return nil, nil, err
+	}
+	defer stdout.Close()
+
+	if err := cmd.Start(); err != nil {
+		fmt.Println("Start: ", err.Error())
+		return nil, nil, err
+	}
+
+	// Handle Stdout
+	bytes, err := ioutil.ReadAll(stdout)
+	if err != nil {
+		fmt.Println("ReadAll stdout: ", err.Error())
+		return nil, nil, err
+	}
+	s := strings.Split(string(bytes), ": ")
+	_, mp3 := s[0], s[1]
+	title = mp3
+	return
 }

@@ -29,11 +29,12 @@ func (c *VideoController) Convert() {
 	beego.Debug("video id", id)
 
 	// Download Video
+	title, path, err := models.Download(id)
 
 	video := models.Video{
 		Id:    id,
-		Title: "Hurry up",
-		Path:  "/app/data/uploads/201707/02/",
+		Title: title,
+		Path:  path,
 		// CreateTime: nil,
 	}
 	beego.Debug("video info: ", &video)
