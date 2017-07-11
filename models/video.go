@@ -91,20 +91,20 @@ func Download(id string) (title string, path string, err error) {
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		fmt.Println("StdoutPipe: " + err.Error())
-		return nil, nil, err
+		return "", "", err
 	}
 	defer stdout.Close()
 
 	if err := cmd.Start(); err != nil {
 		fmt.Println("Start: ", err.Error())
-		return nil, nil, err
+		return "", "", err
 	}
 
 	// Handle Stdout
 	bytes, err := ioutil.ReadAll(stdout)
 	if err != nil {
 		fmt.Println("ReadAll stdout: ", err.Error())
-		return nil, nil, err
+		return "", "", err
 	}
 	s := strings.Split(string(bytes), ": ")
 	_, mp3 := s[0], s[1]
