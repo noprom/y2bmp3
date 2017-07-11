@@ -22,7 +22,7 @@ func PathExists(path string) (bool, error) {
 }
 
 func main() {
-	path := fmt.Sprintf("/app/data/%s", time.Now().Format("200601/02"))
+	path := fmt.Sprintf("/app/data/videos/%s", time.Now().Format("200601/02"))
 	pathExists, _ := PathExists(path)
 	if !pathExists {
 		// fmt.Printf("%s not exist.\n", path)
