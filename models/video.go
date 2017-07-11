@@ -108,6 +108,6 @@ func Download(id string) (title string, path string, err error) {
 	}
 	s := strings.Split(string(bytes), ": ")
 	_, mp3 := s[0], s[1]
-	title = mp3
+	title = strings.Replace(mp3, "\n", "", -1)
 	return
 }
