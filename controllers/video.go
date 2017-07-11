@@ -31,6 +31,10 @@ func (c *VideoController) Convert() {
 	// Download Video
 	title, path, err := models.Download(id)
 
+	if err != nil {
+		beego.Debug("download error: ", err)
+	}
+
 	video := models.Video{
 		Id:    id,
 		Title: title,
