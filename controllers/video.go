@@ -8,15 +8,19 @@ import (
 	// "os"
 	// "path/filepath"
 	"time"
-
+	"encoding/json"
 	"y2bmp3/models"
 
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/cache"
+	_ "github.com/astaxie/beego/cache/redis"
 )
 
 type VideoController struct {
 	BaseController
 }
+
+var bm, err = cache.NewCache("redis", `{"key":"collectionName","conn":"redis:6379","dbNum":"0","password":""}`)
 
 // @Title Convert
 // @Description Convert and Download Youtube MP3
@@ -31,11 +35,16 @@ func (c *VideoController) Convert() {
 	cacheKey := "v_" + id
 	cacheExist := bm.IsExist(cacheKey)
 	if cacheExist {
-		cache := bm.Get(cacheKey)
-		beego.Debug("Cache hit: " + cache)
-		c.Data["json"] = cache
-		c.ServeJSON()
-		return
+		result := bm.Get(cacheKey)
+		if result == nil {
+			beego.Error("Cache get nil")
+		} else {
+			cacheValue := string(result.([]uint8))
+			beego.Debug("Cache hit: " + cacheValue)
+			c.Data["json"] = cacheValue
+			c.ServeJSON()
+	                return
+		}
 	} else {
 		// Find the Data from Mongo
 		video := models.Video{}
@@ -71,21 +80,29 @@ func (c *VideoController) Convert() {
 					return
 				}
 				c.Data["json"] = v
-				bm.Put(cacheKey, v, 24*365*time.Hour)
+				b, err := json.Marshal(v)
+				if err != nil {
+					bm.Put(cacheKey, string(b), 24*365*time.Hour)
+				}
 			} else {
 				c.Data["json"] = video
-				bm.Put(cacheKey, video, 24*365*time.Hour)
+				b, err := json.Marshal(video)
+				if err != nil {
+					bm.Put(cacheKey, string(b), 24*365*time.Hour)
+				}
 			}
 			c.ServeJSON()
 			return
 		}
-
-		bm.Put(cacheKey, video, 24*365*time.Hour)
+	
+		b, err := json.Marshal(video)
+		if err != nil {
+			bm.Put(cacheKey, string(b), 24*365*time.Hour)
+		}
+		beego.Debug("Video Info: ", &video)
+		c.Data["json"] = video
+		c.ServeJSON()
 	}
-
-	beego.Debug("Video Info: ", &video)
-	c.Data["json"] = video
-	c.ServeJSON()
 }
 
 // Register method.
