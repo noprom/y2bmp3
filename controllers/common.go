@@ -24,6 +24,7 @@ const (
 	ErrWriteFile    = "写文件出错"
 	ErrSystem       = "操作系统错误"
 	ErrNoVideo      = "No such video"
+	ErrDownload     = "Download Error"
 )
 
 // ControllerError is controller error info structer.

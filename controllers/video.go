@@ -7,7 +7,7 @@ import (
 	// "net/http"
 	// "os"
 	// "path/filepath"
-	// "time"
+	"time"
 
 	"y2bmp3/models"
 
@@ -25,38 +25,51 @@ type VideoController struct {
 // @Failure 403 body is empty
 func (c *VideoController) Convert() {
 	id := c.GetString("v")
-	c.Data["json"] = models.NewNormalInfo(id)
-	beego.Debug("video id", id)
+	beego.Debug("Convert video id: ", id)
 
-	// Download Video
-	title, path, err := models.Download(id)
-
-	if err != nil {
-		beego.Debug("download error: ", err)
-	}
-
-	video := models.Video{
-		Id:    id,
-		Title: title,
-		Path:  path,
-		// CreateTime: nil,
-	}
-	beego.Debug("video info: ", &video)
-	c.Data["json"] = video
-	c.ServeJSON()
-	return
-	if code, err := video.FindById(id); err != nil {
-		beego.Debug("Find Video By Id: ", err)
+	// Find the Data from Mongo
+	video := models.Video{}
+	if code, err := video.FindByID(id); err != nil {
+		beego.Error("FindVideoById: ", err)
 		if code == models.ErrNotFound {
-			c.Data["json"] = models.NewErrorInfo(ErrNoVideo)
+			// Download Video
+			title, path, err := models.DownloadVideo(id)
+
+			if err != nil {
+				beego.Error("download error: ", err)
+				c.Data["json"] = models.NewErrorInfo(ErrDownload)
+				c.ServeJSON()
+				return
+			}
+
+			v := models.Video{
+				Id:         id,
+				Title:      title,
+				Path:       path,
+				CreateTime: time.Now(),
+			}
+			beego.Debug("Download video info: ", &v)
+			// Insert Into MongoDB
+			if code, err := v.Insert(); err != nil {
+				beego.Error("InsertVideo:", err)
+				if code == models.ErrDupRows {
+					c.Data["json"] = models.NewErrorInfo(ErrDupUser)
+				} else {
+					c.Data["json"] = models.NewErrorInfo(ErrDatabase)
+				}
+				c.ServeJSON()
+				return
+			}
+			c.Data["json"] = v
 		} else {
-			c.Data["json"] = models.NewErrorInfo(ErrDatabase)
+			c.Data["json"] = video
 		}
 		c.ServeJSON()
 		return
 	}
 
 	beego.Debug("Video Info: ", &video)
+	c.Data["json"] = video
 	c.ServeJSON()
 }
 

@@ -15,10 +15,10 @@ import (
 
 type Video struct {
 	// https://www.youtube.com/watch?v=XKqWnOtbSr8
-	Id    string `bson:"_id"			json:"_id,omitempty"`
-	Title string `bson:"title"			json:"name,omitempty"`
-	Path  string `bson:"path"			json:"path,omitempty"`
-	// CreateTime time.Time `bson:"create_time"	json:"create_time,omitempty"`
+	Id         string    `bson:"_id"			json:"_id,omitempty"`
+	Title      string    `bson:"title"			json:"name,omitempty"`
+	Path       string    `bson:"path"			json:"path,omitempty"`
+	CreateTime time.Time `bson:"create_time"	json:"create_time,omitempty"`
 }
 
 // Insert insert a document to collection.
@@ -75,8 +75,8 @@ func PathExists(path string) (bool, error) {
 }
 
 // Download from Youtube, and convert it to MP3.
-func Download(id string) (title string, path string, err error) {
-	path = fmt.Sprintf("/app/data/videos/%s", time.Now().Format("200601/02"))
+func DownloadVideo(id string) (title string, path string, err error) {
+	path = fmt.Sprintf("/app/data/videos/%s", time.Now().Format("200601/02/10/10"))
 	pathExists, _ := PathExists(path)
 	if !pathExists {
 		// fmt.Printf("%s not exist.\n", path)
