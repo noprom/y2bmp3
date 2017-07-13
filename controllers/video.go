@@ -27,45 +27,60 @@ func (c *VideoController) Convert() {
 	id := c.GetString("v")
 	beego.Debug("Convert video id: ", id)
 
-	// Find the Data from Mongo
-	video := models.Video{}
-	if code, err := video.FindById(id); err != nil {
-		beego.Error("FindVideoById: ", err)
-		if code == models.ErrNotFound {
-			// Download Video
-			title, path, err := models.DownloadVideo(id)
-
-			if err != nil {
-				beego.Error("download error: ", err)
-				c.Data["json"] = models.NewErrorInfo(ErrDownload)
-				c.ServeJSON()
-				return
-			}
-
-			v := models.Video{
-				Id:         id,
-				Title:      title,
-				Path:       path,
-				CreateTime: time.Now(),
-			}
-			beego.Debug("Download video info: ", &v)
-			// Insert Into MongoDB
-			if code, err := v.Insert(); err != nil {
-				beego.Error("InsertVideo:", err)
-				if code == models.ErrDupRows {
-					c.Data["json"] = models.NewErrorInfo(ErrDupUser)
-				} else {
-					c.Data["json"] = models.NewErrorInfo(ErrDatabase)
-				}
-				c.ServeJSON()
-				return
-			}
-			c.Data["json"] = v
-		} else {
-			c.Data["json"] = video
-		}
+	// Get Video from Redis
+	cacheKey := "v_" + id
+	cacheExist := bm.IsExist(cacheKey)
+	if cacheExist {
+		cache := bm.Get(cacheKey)
+		beego.Debug("Cache hit: " + cache)
+		c.Data["json"] = cache
 		c.ServeJSON()
 		return
+	} else {
+		// Find the Data from Mongo
+		video := models.Video{}
+		if code, err := video.FindById(id); err != nil {
+			beego.Error("FindVideoById: ", err)
+			if code == models.ErrNotFound {
+				// Download Video
+				title, path, err := models.DownloadVideo(id)
+
+				if err != nil {
+					beego.Error("download error: ", err)
+					c.Data["json"] = models.NewErrorInfo(ErrDownload)
+					c.ServeJSON()
+					return
+				}
+
+				v := models.Video{
+					Id:         id,
+					Title:      title,
+					Path:       path,
+					CreateTime: time.Now(),
+				}
+				beego.Debug("Download video info: ", &v)
+				// Insert Into MongoDB
+				if code, err := v.Insert(); err != nil {
+					beego.Error("InsertVideo:", err)
+					if code == models.ErrDupRows {
+						c.Data["json"] = models.NewErrorInfo(ErrDupUser)
+					} else {
+						c.Data["json"] = models.NewErrorInfo(ErrDatabase)
+					}
+					c.ServeJSON()
+					return
+				}
+				c.Data["json"] = v
+				bm.Put(cacheKey, v, 24*365*time.Hour)
+			} else {
+				c.Data["json"] = video
+				bm.Put(cacheKey, video, 24*365*time.Hour)
+			}
+			c.ServeJSON()
+			return
+		}
+
+		bm.Put(cacheKey, video, 24*365*time.Hour)
 	}
 
 	beego.Debug("Video Info: ", &video)

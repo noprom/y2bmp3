@@ -2,12 +2,12 @@ package main
 
 import (
 	_ "y2bmp3/routers"
-	
-	"time"
+
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/cache"
 	_ "github.com/astaxie/beego/cache/redis"
 	_ "github.com/astaxie/beego/session/redis"
+	"time"
 )
 
 var bm, err = cache.NewCache("redis", `{"key":"collectionName","conn":"redis:6379","dbNum":"0","password":""}`)
