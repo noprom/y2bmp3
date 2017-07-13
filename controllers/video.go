@@ -29,7 +29,7 @@ func (c *VideoController) Convert() {
 
 	// Find the Data from Mongo
 	video := models.Video{}
-	if code, err := video.FindByID(id); err != nil {
+	if code, err := video.FindById(id); err != nil {
 		beego.Error("FindVideoById: ", err)
 		if code == models.ErrNotFound {
 			// Download Video
