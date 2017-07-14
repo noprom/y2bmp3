@@ -41,7 +41,9 @@ func (c *VideoController) Convert() {
 		} else {
 			cacheValue := string(result.([]uint8))
 			beego.Debug("Cache hit: " + cacheValue)
-			c.Data["json"] = cacheValue
+			v := models.Video{}
+			json.Unmarshal([]byte(cacheValue), &v)
+			c.Data["json"] = v
 			c.ServeJSON()
 	                return
 		}
@@ -80,14 +82,14 @@ func (c *VideoController) Convert() {
 					return
 				}
 				c.Data["json"] = v
-				b, err := json.Marshal(v)
-				if err != nil {
+				if b, err := json.Marshal(video); err == nil {
+					beego.Debug("Cache to redis: ", string(b))
 					bm.Put(cacheKey, string(b), 24*365*time.Hour)
 				}
 			} else {
 				c.Data["json"] = video
-				b, err := json.Marshal(video)
-				if err != nil {
+				if b, err := json.Marshal(video); err == nil {
+					beego.Debug("Cache to redis: ", string(b))
 					bm.Put(cacheKey, string(b), 24*365*time.Hour)
 				}
 			}
@@ -95,11 +97,11 @@ func (c *VideoController) Convert() {
 			return
 		}
 	
-		b, err := json.Marshal(video)
-		if err != nil {
+		if b, err := json.Marshal(video); err == nil {
+			beego.Debug("Cache to redis: ", string(b))
 			bm.Put(cacheKey, string(b), 24*365*time.Hour)
 		}
-		beego.Debug("Video Info: ", &video)
+		beego.Debug("Read from Mongo, Video Info: ", &video)
 		c.Data["json"] = video
 		c.ServeJSON()
 	}
