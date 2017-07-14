@@ -76,17 +76,18 @@ func PathExists(path string) (bool, error) {
 
 // Download from Youtube, and convert it to MP3.
 func DownloadVideo(id string) (title string, path string, err error) {
-	path = fmt.Sprintf("/app/data/videos/%s", time.Now().Format("200601/02/10/10"))
-	pathExists, _ := PathExists(path)
+	path = time.Now().Format("200601/02/10/10")
+	savePath = "/app/data/videos/" + path
+	pathExists, _ := PathExists(savePath)
 	if !pathExists {
 		// fmt.Printf("%s not exist.\n", path)
-		mkdirErr := os.MkdirAll(path, 0777)
+		mkdirErr := os.MkdirAll(savePath, 0777)
 		if mkdirErr != nil {
 			fmt.Println("mkdir Err :" + mkdirErr.Error())
 		}
 	}
 
-	cmdStr := fmt.Sprintf("cd %s && youtube-dl -c --no-warnings -x --audio-format mp3 https://www.youtube.com/watch?v=%s | grep .mp3", path, id)
+	cmdStr := fmt.Sprintf("cd %s && youtube-dl -c --no-warnings -x --audio-format mp3 https://www.youtube.com/watch?v=%s | grep .mp3", savePath, id)
 	cmd := exec.Command("/bin/sh", "-c", cmdStr)
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
