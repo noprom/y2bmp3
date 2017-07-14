@@ -77,7 +77,7 @@ func PathExists(path string) (bool, error) {
 // Download from Youtube, and convert it to MP3.
 func DownloadVideo(id string) (title string, path string, err error) {
 	path = time.Now().Format("200601/02/10/10")
-	savePath = "/app/data/videos/" + path
+	savePath := "/app/data/videos/" + path
 	pathExists, _ := PathExists(savePath)
 	if !pathExists {
 		// fmt.Printf("%s not exist.\n", path)

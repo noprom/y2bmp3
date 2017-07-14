@@ -76,16 +76,12 @@ func (c *VideoController) Convert() {
 					return
 				}
 				c.Data["json"] = v
-				if b, err := json.Marshal(video); err == nil {
+				if b, err := json.Marshal(v); err == nil {
 					beego.Debug("Cache to redis: ", string(b))
 					bm.Put(cacheKey, string(b), 24*365*time.Hour)
 				}
 			} else {
 				c.Data["json"] = video
-				if b, err := json.Marshal(video); err == nil {
-					beego.Debug("Cache to redis: ", string(b))
-					bm.Put(cacheKey, string(b), 24*365*time.Hour)
-				}
 			}
 			c.ServeJSON()
 			return
