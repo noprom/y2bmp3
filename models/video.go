@@ -1,10 +1,9 @@
 package models
 
 import (
-	"gopkg.in/mgo.v2"
-	// "gopkg.in/mgo.v2/bson"
 	"fmt"
-	// "github.com/astaxie/beego"
+	"github.com/astaxie/beego"
+	"gopkg.in/mgo.v2"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -84,7 +83,7 @@ func DownloadVideo(id string) (title string, path string, err error) {
 		// fmt.Printf("%s not exist.\n", path)
 		mkdirErr := os.MkdirAll(savePath, 0777)
 		if mkdirErr != nil {
-			fmt.Println("mkdir Err :" + mkdirErr.Error())
+			beego.Debug("mkdir Err :" + mkdirErr.Error())
 		}
 	}
 
@@ -92,20 +91,21 @@ func DownloadVideo(id string) (title string, path string, err error) {
 	cmd := exec.Command("/bin/sh", "-c", cmdStr)
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		fmt.Println("StdoutPipe: " + err.Error())
+		beego.Error("StdoutPipe: " + err.Error())
 		return "", "", err
 	}
 	defer stdout.Close()
 
 	if err := cmd.Start(); err != nil {
-		fmt.Println("Start: ", err.Error())
+		beego.Error("Start: ", err.Error())
 		return "", "", err
 	}
 
 	// Handle Stdout
 	bytes, err := ioutil.ReadAll(stdout)
+
 	if err != nil {
-		fmt.Println("ReadAll stdout: ", err.Error())
+		beego.Error("ReadAll stdout: ", err.Error())
 		return "", "", err
 	}
 	s := strings.Split(string(bytes), ": ")
