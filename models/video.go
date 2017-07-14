@@ -75,6 +75,7 @@ func PathExists(path string) (bool, error) {
 
 // Download from Youtube, and convert it to MP3.
 func DownloadVideo(id string) (title string, path string, err error) {
+	beego.Debug("Start download mp3 using youtube-dl...")
 	now := time.Now()
 	path = fmt.Sprintf("%s/%d/%d/%d", now.Format("200601/02"), now.Hour(), now.Minute(), now.Second())
 	savePath := "/app/data/videos/" + path
@@ -111,5 +112,6 @@ func DownloadVideo(id string) (title string, path string, err error) {
 	s := strings.Split(string(bytes), ": ")
 	_, mp3 := s[0], s[1]
 	title = strings.Replace(mp3, "\n", "", -1)
+	beego.Debug("Finish download mp3 using youtube-dl...")
 	return
 }
