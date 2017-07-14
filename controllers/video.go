@@ -61,7 +61,7 @@ func (c *VideoController) Convert() {
 					Id:         id,
 					Title:      title,
 					Path:       path,
-					CreateTime: time.Now().Format("2006-01-02 15:04:05"),
+					CreateTime: time.Now(),
 				}
 				beego.Debug("Download video info: ", &v)
 				// Insert Into MongoDB
