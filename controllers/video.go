@@ -1,14 +1,8 @@
 package controllers
 
 import (
-	// "crypto/md5"
-	// "fmt"
-	// "io"
-	// "net/http"
-	// "os"
-	// "path/filepath"
-	"time"
 	"encoding/json"
+	"time"
 	"y2bmp3/models"
 
 	"github.com/astaxie/beego"
@@ -45,7 +39,7 @@ func (c *VideoController) Convert() {
 			json.Unmarshal([]byte(cacheValue), &v)
 			c.Data["json"] = v
 			c.ServeJSON()
-	                return
+			return
 		}
 	} else {
 		// Find the Data from Mongo
@@ -96,7 +90,7 @@ func (c *VideoController) Convert() {
 			c.ServeJSON()
 			return
 		}
-	
+
 		if b, err := json.Marshal(video); err == nil {
 			beego.Debug("Cache to redis: ", string(b))
 			bm.Put(cacheKey, string(b), 24*365*time.Hour)
@@ -106,48 +100,3 @@ func (c *VideoController) Convert() {
 		c.ServeJSON()
 	}
 }
-
-// Register method.
-// func (c *UserController) Register() {
-// 	form := models.RegisterForm{}
-// 	if err := c.ParseForm(&form); err != nil {
-// 		beego.Debug("ParseRegsiterForm:", err)
-// 		c.Data["json"] = models.NewErrorInfo(ErrInputData)
-// 		c.ServeJSON()
-// 		return
-// 	}
-// 	beego.Debug("ParseRegsiterForm:", &form)
-
-// 	if err := c.VerifyForm(&form); err != nil {
-// 		beego.Debug("ValidRegsiterForm:", err)
-// 		c.Data["json"] = models.NewErrorInfo(ErrInputData)
-// 		c.ServeJSON()
-// 		return
-// 	}
-
-// 	regDate := time.Now()
-// 	user, err := models.NewUser(&form, regDate)
-// 	if err != nil {
-// 		beego.Error("NewUser:", err)
-// 		c.Data["json"] = models.NewErrorInfo(ErrSystem)
-// 		c.ServeJSON()
-// 		return
-// 	}
-// 	beego.Debug("NewUser:", user)
-
-// 	if code, err := user.Insert(); err != nil {
-// 		beego.Error("InsertUser:", err)
-// 		if code == models.ErrDupRows {
-// 			c.Data["json"] = models.NewErrorInfo(ErrDupUser)
-// 		} else {
-// 			c.Data["json"] = models.NewErrorInfo(ErrDatabase)
-// 		}
-// 		c.ServeJSON()
-// 		return
-// 	}
-
-// 	go models.IncTotalUserCount(regDate)
-
-// 	c.Data["json"] = models.NewNormalInfo("Succes")
-// 	c.ServeJSON()
-// }

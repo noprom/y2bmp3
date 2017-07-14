@@ -1,4 +1,3 @@
-#FROM golang:1.6.0
 FROM daocloud.io/library/golang:1.8.1
 MAINTAINER noprom tyee.noprom@qq.com
 
