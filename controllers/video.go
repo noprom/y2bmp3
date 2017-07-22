@@ -24,7 +24,11 @@ var bm, err = cache.NewCache("redis", `{"key":"collectionName","conn":"redis:637
 func (c *VideoController) Convert() {
 	id := c.GetString("v")
 	beego.Debug("Convert video id: ", id)
-
+	exist, err := models.VideoExist(id)
+	if !exist {
+		beego.Debug("Video does not exist on Youtube.")
+		c.RetError(errVideoNotExist)
+	}
 	// Get Video from Redis
 	cacheKey := "v_" + id
 	cacheExist := bm.IsExist(cacheKey)

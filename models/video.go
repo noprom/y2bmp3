@@ -115,3 +115,31 @@ func DownloadVideo(id string) (title string, path string, err error) {
 	beego.Debug("Finish download mp3 using youtube-dl...")
 	return
 }
+
+// Check if the video is on Youtube.
+func VideoExist(id string) (exist bool, err error) {
+	beego.Debug("Start check video exist...")
+	notExist := "This video does not exist."
+	cmdStr := fmt.Sprintf("curl -s 'https://www.youtube.com/watch?v=%s' | grep '%s'", id, notExist)
+	cmd := exec.Command("/bin/sh", "-c", cmdStr)
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		beego.Error("StdoutPipe: " + err.Error())
+		return false, err
+	}
+	defer stdout.Close()
+
+	if err := cmd.Start(); err != nil {
+		beego.Error("Start: ", err.Error())
+		return false, err
+	}
+
+	// Handle Stdout
+	bytes, err := ioutil.ReadAll(stdout)
+	if err != nil {
+		beego.Error("ReadAll stdout: ", err.Error())
+		return false, err
+	}
+	exist = !strings.Contains(string(bytes), notExist)
+	return
+}
