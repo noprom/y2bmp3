@@ -24,10 +24,10 @@ var bm, err = cache.NewCache("redis", `{"key":"collectionName","conn":"redis:637
 func (c *VideoController) Convert() {
 	id := c.GetString("v")
 	beego.Debug("Convert video id: ", id)
-	exist, err := models.VideoExist(id)
+	exist, _ := models.VideoExist(id)
 	if !exist {
 		beego.Debug("Video does not exist on Youtube.")
-		c.RetError(errVideoNotExist)
+		c.ApiReturn(&ApiResult{400, "Video does not exist on Youtube.", nil})
 	}
 	// Get Video from Redis
 	cacheKey := "v_" + id
@@ -41,9 +41,10 @@ func (c *VideoController) Convert() {
 			beego.Debug("Cache hit: " + cacheValue)
 			v := models.Video{}
 			json.Unmarshal([]byte(cacheValue), &v)
-			c.Data["json"] = v
-			c.ServeJSON()
-			return
+			c.ApiReturn(&ApiResult{200, "success", v})
+			// c.Data["json"] = v
+			// c.ServeJSON()
+			// return
 		}
 	} else {
 		// Find the Data from Mongo

@@ -27,6 +27,17 @@ const (
 	ErrDownload     = "Download Error"
 )
 
+// BaseController definiton.
+type BaseController struct {
+	beego.Controller
+}
+
+type ApiResult struct {
+	Code    int         `json:"code"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
+}
+
 // ControllerError is controller error info structer.
 type ControllerError struct {
 	Status   int    `json:"status"`
@@ -55,9 +66,13 @@ var (
 	errVideoNotExist = &ControllerError{400, 10013, "Video does not exist", "Video does not exist", ""}
 )
 
-// BaseController definiton.
-type BaseController struct {
-	beego.Controller
+// Return data
+func (base *BaseController) ApiReturn(r *ApiResult) {
+	base.Ctx.Output.Header("Content-Type", "application/json; charset=utf-8")
+	base.Ctx.ResponseWriter.WriteHeader(r.Code)
+	base.Data["json"] = r
+	base.ServeJSON()
+	base.StopRun()
 }
 
 // RetError return error information in JSON.
