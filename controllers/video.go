@@ -41,10 +41,7 @@ func (c *VideoController) Convert() {
 			beego.Debug("Cache hit: " + cacheValue)
 			v := models.Video{}
 			json.Unmarshal([]byte(cacheValue), &v)
-			c.ApiReturn(&ApiResult{200, "success", v})
-			// c.Data["json"] = v
-			// c.ServeJSON()
-			// return
+			c.ApiReturn(&ApiResult{200, "Convert Success", v})
 		}
 	} else {
 		// Find the Data from Mongo
@@ -57,9 +54,7 @@ func (c *VideoController) Convert() {
 
 				if err != nil {
 					beego.Error("download error: ", err)
-					c.Data["json"] = models.NewErrorInfo(ErrDownload)
-					c.ServeJSON()
-					return
+					c.ApiReturn(downloadErr)
 				}
 
 				v := models.Video{
@@ -72,13 +67,7 @@ func (c *VideoController) Convert() {
 				// Insert Into MongoDB
 				if code, err := v.Insert(); err != nil {
 					beego.Error("InsertVideo:", err)
-					if code == models.ErrDupRows {
-						c.Data["json"] = models.NewErrorInfo(ErrDupUser)
-					} else {
-						c.Data["json"] = models.NewErrorInfo(ErrDatabase)
-					}
-					c.ServeJSON()
-					return
+					c.ApiReturn(downloadErr)
 				}
 				c.Data["json"] = v
 				if b, err := json.Marshal(v); err == nil {
@@ -86,10 +75,8 @@ func (c *VideoController) Convert() {
 					bm.Put(cacheKey, string(b), 24*365*time.Hour)
 				}
 			} else {
-				c.Data["json"] = video
+				c.ApiReturn(&ApiResult{200, "Convert Success", video})
 			}
-			c.ServeJSON()
-			return
 		}
 
 		if b, err := json.Marshal(video); err == nil {
@@ -97,7 +84,6 @@ func (c *VideoController) Convert() {
 			bm.Put(cacheKey, string(b), 24*365*time.Hour)
 		}
 		beego.Debug("Read from Mongo, Video Info: ", &video)
-		c.Data["json"] = video
-		c.ServeJSON()
+		c.ApiReturn(&ApiResult{200, "Convert Success", video})
 	}
 }

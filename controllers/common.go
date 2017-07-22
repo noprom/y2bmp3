@@ -38,6 +38,10 @@ type ApiResult struct {
 	Data    interface{} `json:"data"`
 }
 
+var (
+	downloadErr = &ApiResult{500, "Convert fail, please try again later", nil}
+)
+
 // ControllerError is controller error info structer.
 type ControllerError struct {
 	Status   int    `json:"status"`
