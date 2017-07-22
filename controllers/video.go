@@ -65,7 +65,7 @@ func (c *VideoController) Convert() {
 				}
 				beego.Debug("Download video info: ", &v)
 				// Insert Into MongoDB
-				if code, err := v.Insert(); err != nil {
+				if _, err := v.Insert(); err != nil {
 					beego.Error("InsertVideo:", err)
 					c.ApiReturn(downloadErr)
 				}
