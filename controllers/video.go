@@ -69,11 +69,11 @@ func (c *VideoController) Convert() {
 					beego.Error("InsertVideo:", err)
 					c.ApiReturn(downloadErr)
 				}
-				c.Data["json"] = v
 				if b, err := json.Marshal(v); err == nil {
 					beego.Debug("Cache to redis: ", string(b))
 					bm.Put(cacheKey, string(b), 24*365*time.Hour)
 				}
+				c.ApiReturn(&ApiResult{200, "Convert Success", v})
 			} else {
 				c.ApiReturn(&ApiResult{200, "Convert Success", video})
 			}
