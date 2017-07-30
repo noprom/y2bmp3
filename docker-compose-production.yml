@@ -5,6 +5,7 @@ nginx:
   hostname: nginx
   links:
     - "go"
+    - "node"
   volumes:
     - /app:/app
     - /app/conf/nginx:/etc/nginx/conf.d
