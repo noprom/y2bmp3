@@ -8,7 +8,7 @@ nginx:
     - "node"
   volumes:
     - /app:/app
-    - /app/conf/nginx:/etc/nginx/conf.d
+    - /app/www/y2bmp3/document/conf/nginx:/etc/nginx/conf.d
     - /app/log/nginx:/var/log/nginx
 node:
   image: y2bvue:latest
