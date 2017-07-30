@@ -5,10 +5,20 @@ nginx:
   hostname: nginx
   links:
     - "go"
+    - "node"
   volumes:
     - ~/app:/app
     - ~/Documents/Dev/Go/src/conf/nginx:/etc/nginx/conf.d
     - ~/app/log/nginx:/var/log/nginx
+node:
+  image: y2bvue:latest
+  ports:
+    - "8091:8090"
+  hostname: node
+  volumes:
+    - ~/Documents/Dev/Vue/Pro/y2b-vue:/usr/src/app
+  working_dir: /usr/src/app
+  command: "npm run dev"
 go:
   image: beego:v1
   ports: 

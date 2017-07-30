@@ -9,6 +9,15 @@ nginx:
     - /app:/app
     - /app/conf/nginx:/etc/nginx/conf.d
     - /app/log/nginx:/var/log/nginx
+node:
+  image: y2bvue:latest
+  ports:
+    - "8091:8090"
+  hostname: node
+  volumes:
+    - /app/www/y2b-vue:/usr/src/app
+  working_dir: /usr/src/app
+  command: "npm run build && npm start"
 go:
   image: beego:1.7.2
   ports: 
