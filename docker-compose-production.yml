@@ -16,7 +16,7 @@ node:
     - "8091:8090"
   hostname: node
   volumes:
-    - /app/www/y2b-vue:/usr/src/app
+    - /app/www/y2bvue:/usr/src/app
   working_dir: /usr/src/app
   command: "npm run build && npm start"
 go:
